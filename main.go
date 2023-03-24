@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"unicode"
 )
 
 func main() {
@@ -18,11 +19,19 @@ func main() {
 		}
 		defer file.Close()
 		var buffer [4]byte
+		var sbuffer [4]byte
 		_, err = io.ReadFull(file, buffer[:])
 		if err != nil {
 			log.Fatalf("error reading file %s: %s", filename, err)
 		}
-        fmt.Printf("%s,%x,%s\n", filename, buffer, buffer)
+		for i, b := range buffer {
+			if unicode.IsPrint(rune(b)) {
+				sbuffer[i] = buffer[i]
+			} else {
+				sbuffer[i] = '.'
+			}
+		}
+		fmt.Printf("%s,%x,%s\n", filename, buffer, sbuffer)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("error scanning input: %s", err)
