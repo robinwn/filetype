@@ -18,11 +18,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("error opening file %s: %s", filename, err)
 		}
-		defer fileh.Close()
 		var buffer [4]byte
 		var sbuffer [4]byte
-		n := 0
-		n, err = io.ReadFull(fileh, buffer[:])
+		n, err := io.ReadFull(fileh, buffer[:])
 		if err != nil {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
 				// Partial read, pad the buffer with zeros
@@ -43,6 +41,10 @@ func main() {
 		fileinfo, err := fileh.Stat()
 		if err != nil {
 			log.Fatalf("error getting file info for %s: %s", filename, err)
+		}
+		err = fileh.Close() // close the file explicitly
+		if err != nil {
+			log.Fatalf("error closing file %s: %s", filename, err)
 		}
 		dir, file := filepath.Split(filename)
 		dir = filepath.Clean(dir)
