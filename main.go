@@ -49,7 +49,7 @@ func main() {
 		dir, file := filepath.Split(filename)
 		dir = filepath.Clean(dir)
 		ext := filepath.Ext(file)
-		fmt.Printf("\"%s\",\"%s\",\"%s\",%d,%x,\"%s\"\n", dir, file[:len(file)-len(ext)], ext, fileinfo.Size(), buffer, sbuffer)
+		fmt.Printf("%q,%q,%q,%d,%x,%q\n", dir, file[:len(file)-len(ext)], ext, fileinfo.Size(), buffer, sbuffer)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("error scanning input: %s", err)
