@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"encoding/csv"
 	"encoding/hex"
-	// "fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
-	"unicode"
 )
 
 func main() {
@@ -39,7 +37,7 @@ func main() {
 			}
 		}
 		for i, b := range buffer {
-			if unicode.IsPrint(rune(b)) {
+			if b >= 32 && b <= 126 {      // only want to show ASCII printable
 				sbuffer[i] = buffer[i]
 			} else {
 				sbuffer[i] = '.'
