@@ -17,7 +17,7 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	for scanner.Scan() {
+	for scanner.Scan() { // for each line from Stdin, do ...
 		filename := scanner.Text()
 		fileh, err := os.Open(filename)
 		if err != nil {
@@ -25,7 +25,8 @@ func main() {
 		}
 		var buffer [4]byte
 		var sbuffer [4]byte
-		n, err := io.ReadFull(fileh, buffer[:])
+
+		n, err := io.ReadFull(fileh, buffer[:]) // read the first 4 bytes
 		if err != nil {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
 				// Partial read, pad the buffer with zeros
@@ -36,26 +37,36 @@ func main() {
 				log.Fatalf("error reading file %s: %s", filename, err)
 			}
 		}
-		for i, b := range buffer {
-			if b >= 32 && b <= 126 {      // only want to show ASCII printable
+
+		for i, b := range buffer { // map buffer to ASCII printable chars
+			if b >= 32 && b <= 126 {
 				sbuffer[i] = buffer[i]
 			} else {
 				sbuffer[i] = '.'
 			}
 		}
-		fileinfo, err := fileh.Stat()
+
+		fileinfo, err := fileh.Stat() // get file metadata (size)
 		if err != nil {
 			log.Fatalf("error getting file info for %s: %s", filename, err)
 		}
+
 		err = fileh.Close() // close the file explicitly
 		if err != nil {
 			log.Fatalf("error closing file %s: %s", filename, err)
 		}
-		dir, file := filepath.Split(filename)
+
+		dir, file := filepath.Split(filename) // split full name into path, name, ext
 		dir = filepath.Clean(dir)
 		ext := filepath.Ext(file)
 
-		cerr := writer.Write([]string{dir, file[:len(file)-len(ext)], ext, strconv.FormatInt(fileinfo.Size(), 10), hex.EncodeToString(buffer[:]), string(sbuffer[:])})
+		cerr := writer.Write( // write out a csv formatted line
+			[]string{dir,
+				file[:len(file)-len(ext)],
+				ext,
+				strconv.FormatInt(fileinfo.Size(), 10),
+				hex.EncodeToString(buffer[:]),
+				string(sbuffer[:])})
 		if cerr != nil {
 			panic(cerr)
 		}
